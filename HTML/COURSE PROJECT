@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The current situation of GAZA</title>
+</head>
+<body>
 
+<main>
+    <h1>What is GAZA?</h1>
+
+    <p> The Gaza Strip, also known simply as Gaza,[d] is a small territory located on the eastern coast of the Mediterranean Sea; it is the smaller of the two Palestinian territories, the other being the West Bank, that make up the State of Palestine. Inhabited by mostly Palestinian refugees and their descendants, Gaza is one of the most densely populated territories in the world. An end of 2024 estimate puts the population of the Strip at 2.1 million</p>
+
+    <h1>What is happening there?</h1>
+
+    <section>
+        <p>
+            The humanitarian situation in Gaza is <b>unbearable - and deteriorating sharply</b>. Every day has been a fight for survival for the people in Gaza. Food supplies are all but gone, the medical system is shattered and there is an almost complete lack of humanitarian aid entering Gaza. Entire families are trapped and desperately seeking safety and security. The collapse of the health system, coupled with continued fighting and the complete suspension in the delivery of aid for 11 weeks, has led to an unprecedented rise in unmet humanitarian and medical needs. After more than 20 months of hostilities, there is nowhere in Gaza where critical infrastructure has not been impacted. This infrastructure is crucial for services like <b>electricity and water to function and to provide displaced communities with power, safe drinking water, hygiene and sanitary services, and medical care.</b>
+        </p>
+        <p>
+            The head of the Gaza Government Information Office told a news conference earlier today that the bodies of 76 percent of the Palestinians killed in the conflict have been recovered and brought to medical centres. However, at least 14,222 people are still believed to be trapped under the rubble or in areas inaccessible to rescuers. The updated death toll from Israel’s war on the besieged enclave reaches 61,709, having added thousands who are missing and now presumed dead.
+        </p>
+        <h3>Here are the latest casualty figures in Gaza as of February 3, 2025</h3>
+        <ul>
+            <li>Deaths: 61,709</li>
+            <li>Injuries: 160,000</li>
+            <li>Missing: 20,000</li>
+            <li>Displaced: 2.1 million</li>
+        </ul>
+    </section>
+
+    <section>
+        <p>People are seriously malnutritioned in Gaza right now as Israel has stopped all the aids to the GAZA from the whole world. People are in serious danger in GAZA.</p>
+        <h3>Here are some pictures of people in GAZA</h3>
+        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.cnn.com%2F2025%2F05%2F13%2Fmiddleeast%2Fisrael-gaza-starvation-report-intl-hnk&psig=AOvVaw0-Sr8VVgs9g4sb4NIbnowL&ust=1753353681005000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCIi2nM3l0o4DFQAAAAAdAAAAABAE" alt="people waiting for food" width="500" height="300">
+        <img src="https://ichef.bbci.co.uk/news/976/cpsprodpb/12A7B/production/_132603019_gettyimages-1977492264.jpg" alt="children in Gaza" width="500" height="300">
+        <img src="https://static01.nyt.com/images/2024/01/01/world/01gaza-photos-01/01gaza-photos-01-superJumbo.jpg" alt="families in Gaza" width="500" height="300">
+    </section>
+
+    <section>
+        <p>
+            You can read more about it from <a href="https://www.cnn.com/2025/05/13/middleeast/israel-gaza-starvation-report-intl-hnk" target="_blank">here</a>.
+        </p>
+        <p>
+            You can also read more about it from <a href="https://www.bbc.com/news/world-middle-east-67012098" target="_blank">here</a>.
+        </p>
+    </section>
+</main>
+
+<footer style="text-align:center; margin-top:40px; padding:20px; background:#f2f2f2;">
+    &copy; 2025 The current situation of GAZA. All rights reserved.
+</footer>
+
+</body>
+</html>
