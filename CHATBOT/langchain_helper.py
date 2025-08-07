@@ -38,3 +38,19 @@ def get_current_weather(city: str) -> str:
             return f"The current weather in {city} is {weather_desc} with a temperature of {temperature}°C."
     except Exception as e:
         return "could not fetch weather data. Please try again later." + str(e)
+
+tools =[ Tool(
+    name="Weather Tool",
+    func=get_current_weather,
+    description="Get weather info by city name."
+)]
+
+agent = initialize_agent(
+    tools =tools,
+    llm = llm,
+    agent_type = AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose = True
+)
+def get_response( input):
+       response = agent.run(input)
+       return response
