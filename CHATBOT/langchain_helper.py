@@ -43,7 +43,19 @@ tools =[ Tool(
     name="Weather Tool",
     func=get_current_weather,
     description="Get weather info by city name."
-)]
+),
+Tool(
+    name = 'database_query',
+    func=make_table,
+    description = "Use this tool to make a new table in the postgres database."
+),
+Tool(
+    name="List Tables Tool",
+    func=get_tables,
+    description="Use this to get a list of all table names in the PostgreSQL database."
+)
+]
+
 
 agent = initialize_agent(
     tools =tools,
