@@ -8,6 +8,9 @@ from langchain_core.tools import Tool
 from langchain_openai import ChatOpenAI
 import operator
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
+from typing import List
+import json
 load_dotenv()
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -38,9 +41,7 @@ def get_current_weather(city: str) -> str:
             return f"The current weather in {city} is {weather_desc} with a temperature of {temperature}°C."
     except Exception as e:
         return "could not fetch weather data. Please try again later." + str(e)
-from sqlalchemy import create_engine, text
-from typing import List
-import json
+
 
 engine = create_engine(os.getenv("DATBASE_URL"))
 
