@@ -113,7 +113,8 @@ def get_tables(input_str: str = "") -> str:
         return f"Error: {str(e)}"
 
 
-tools =[ Tool(
+tools =[
+Tool(
     name="Weather Tool",
     func=get_current_weather,
     description="Get weather info by city name."
@@ -127,6 +128,16 @@ Tool(
     name="List Tables Tool",
     func=get_tables,
     description="Use this to get a list of all table names in the PostgreSQL database."
+),
+Tool(
+    name="get_info",
+    func=get_data,
+    description='Use this tool to find information about a person by their name. It searches all relevant tables in the database. The input should be just the person\'s name, e.g., "Ali".'
+),
+Tool(
+    name = 'delete_table',
+    func = get_tables,
+    description = 'use this tool to delete a table from the database by the name of the table.'
 )
 ]
 
