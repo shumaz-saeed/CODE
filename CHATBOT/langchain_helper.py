@@ -38,6 +38,79 @@ def get_current_weather(city: str) -> str:
             return f"The current weather in {city} is {weather_desc} with a temperature of {temperature}°C."
     except Exception as e:
         return "could not fetch weather data. Please try again later." + str(e)
+from sqlalchemy import create_engine, text
+from typing import List
+import json
+
+engine = create_engine(os.getenv("DATBASE_URL"))
+
+
+
+def make_table(input_str: str) -> str:
+
+    try:
+
+        input_str = input_str.strip().lower()
+
+        table_match = re.search(r"table called (\w+)|table named (\w+)|table (\w+)", input_str)
+        if not table_match:
+            return "Error: Could not find table name."
+        table_name = next(g for g in table_match.groups() if g)
+
+        col_match = re.search(r"columns (.+)", input_str)
+        if not col_match:
+            return "Error: Could not find column definitions."
+
+        columns_raw = col_match.group(1)
+        columns = []
+        for col_def in columns_raw.split(","):
+            parts = col_def.strip().split()
+            if len(parts) < 2:
+                return f"Error: Invalid column definition '{col_def.strip()}'"
+            col_name = parts[0]
+            col_type = " ".join(parts[1:])
+            columns.append({"name": col_name, "type": col_type})
+
+        column_defs = ", ".join([f"{col['name']} {col['type']}" for col in columns])
+        sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({column_defs});"
+
+        with engine.connect() as conn:
+            conn.execute(text(sql))
+            conn.commit()
+
+        return f"✅ Table '{table_name}' created successfully with columns: {', '.join([col['name'] for col in columns])}"
+
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
+
+
+
+def get_tables(input_str: str = "") -> str:
+    """
+    Returns all tables in the public schema.
+    Works even if the input is a natural language request.
+    """
+    try:
+        if not re.search(r"(show|get|list|display).*(tables?)", input_str, re.IGNORECASE) and input_str.strip() != "":
+            return "Unrecognized request for tables."
+
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public'
+                ORDER BY table_name;
+            """))
+            tables_present = [row[0] for row in result]
+
+        if tables_present:
+            return f"Tables found: {', '.join(tables_present)}"
+        else:
+            return "No tables found in the database."
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
 
 tools =[ Tool(
     name="Weather Tool",
