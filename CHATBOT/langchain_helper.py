@@ -1,25 +1,69 @@
 
 import os
+import re
 import psycopg2
 import requests
 from langchain.agents import initialize_agent
 from langchain.agents import AgentType
 from langchain_core.tools import Tool
 from langchain_openai import ChatOpenAI
-import operator
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from typing import List
 import json
+
 load_dotenv()
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
+
+from langchain_core.language_models import LLM
+from typing import Optional, List, Any
+import requests
+
+class RapidAPIChatGPT(LLM):
+    rapidapi_key: str
+    host: str = "open-ai21.p.rapidapi.com"
+    url: str = "https://open-ai21.p.rapidapi.com/chatgpt"
+
+    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
+        payload = {
+            "messages": [{"role": "user", "content": prompt}],
+            "web_access": False
+        }
+        headers = {
+            "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
+            "x-rapidapi-host":  os.getenv("RAPID_API_HOST"),
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(self.url, json=payload, headers=headers)
+        data = response.json()
+
+        try:
+            return data["result"]  # The main text output from API
+        except KeyError:
+            return str(data)  # In case API returns unexpected format
+
+    @property
+    def _identifying_params(self) -> dict:
+        return {"host": self.host}
+
+    @property
+    def _llm_type(self) -> str:
+        return "rapidapi-chatgpt"
 weather_api_key = os.getenv("OPENWEATHERMAP_API_KEY")
-endpoint = "https://models.github.ai/inference"
 
-model_name = "openai/gpt-4o-mini"
 
-llm = ChatOpenAI(model="gpt-4.1-mini", temperature=0.5, api_key=openai_api_key)
+llm = RapidAPIChatGPT(rapidapi_key="YOUR_RAPIDAPI_KEY_HERE")
+
+
+
+
+
+
+
+## these are the functions called in the tools
+
+
 
 def get_current_weather(city: str) -> str:
     
@@ -41,6 +85,8 @@ def get_current_weather(city: str) -> str:
             return f"The current weather in {city} is {weather_desc} with a temperature of {temperature}°C."
     except Exception as e:
         return "could not fetch weather data. Please try again later." + str(e)
+    
+    
 
 
 engine = create_engine(os.getenv("DATBASE_URL"))
@@ -79,10 +125,10 @@ def make_table(input_str: str) -> str:
             conn.execute(text(sql))
             conn.commit()
 
-        return f"✅ Table '{table_name}' created successfully with columns: {', '.join([col['name'] for col in columns])}"
+        return f" Table '{table_name}' created successfully with columns: {', '.join([col['name'] for col in columns])}"
 
     except Exception as e:
-        return f"❌ Error: {str(e)}"
+        return f" Error: {str(e)}"
 
 
 
@@ -111,6 +157,68 @@ def get_tables(input_str: str = "") -> str:
 
     except Exception as e:
         return f"Error: {str(e)}"
+
+
+
+
+def get_data(input_str: str) -> str:
+    """
+    Fetches data for a person by name from all relevant tables.
+    The input should be the person's name.
+    """
+    try:
+        person_name = input_str.strip()
+
+        all_tables_str = get_tables("list tables")
+        if all_tables_str.startswith("Error"):
+            return all_tables_str
+        
+        table_names = [name.strip() for name in all_tables_str.replace("Tables found:", "").split(',') if name.strip()]
+        
+        results = {}
+        for table in table_names:
+            with engine.connect() as conn:
+                inspector = inspect(engine)
+                columns = inspector.get_columns(table)
+                column_names = [col['name'] for col in columns]
+                
+                if 'name' in column_names:
+                    query = text(f"SELECT * FROM {table} WHERE name = :name")
+                    result = conn.execute(query, {"name": person_name}).fetchall()
+                    if result:
+                        results[table] = [row._asdict() for row in result]
+        
+        if results:
+            return json.dumps(results, indent=2)
+        else:
+            return "No matching records found for that name in any table."
+    except Exception as e:
+        return f"Error fetching data: {e}"
+
+
+def delete_table(input_str: str) -> str:
+    """Delete a table from the database, even if input is natural language."""
+    try:
+        match = re.search(r"(?:delete|drop|remove)\s+table?\s*([a-zA-Z_][a-zA-Z0-9_]*)", input_str, re.IGNORECASE)
+        
+        if not match:
+            return "Error: Could not find table name to delete."
+
+        table_name = match.group(1)
+
+        with engine.connect() as conn:
+            conn.execute(text(f"DROP TABLE IF EXISTS {table_name}"))
+            conn.commit()
+
+        return f"Table '{table_name}' deleted successfully."
+
+    except Exception as e:
+        return f"Error deleting table: {e}"
+      
+
+
+
+
 
 
 tools =[
@@ -142,12 +250,19 @@ Tool(
 ]
 
 
+## this is the agent
 agent = initialize_agent(
     tools =tools,
     llm = llm,
     agent_type = AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    verbose = True
+    verbose = True,
+    handle_parsing_errors= True # This will handle parsing errors gracefully
 )
-def get_response( input):
-       response = agent.run(input)
+
+
+## and this is the function to call the agent and get respond
+def get_response( input_str: str) -> str:
+       response = agent.run(input_str)
        return response
+
+
